@@ -119,6 +119,13 @@ nav a.active{color:#fff;background:rgba(26,158,143,.3);border:1px solid rgba(26,
     <div class="panel-badge">✦ Gerador de Materiais</div>
     <h1 class="panel-title">Crie materiais educacionais incríveis</h1>
     <p class="panel-subtitle">Infográficos visuais prontos e prompts de capa de apostila.</p>
+    
+    <div class="form-group" style="margin-bottom: 20px; background: rgba(26,158,143,.1); padding: 15px; border-radius: 12px; border: 1px dashed var(--accent);">
+      <label class="form-label"><span class="icon">🔑</span>Chave da API (Anthropic)</label>
+      <input type="password" class="form-input" id="apiKey" placeholder="sk-ant-..." />
+      <p style="font-size:11px;color:var(--mid);margin-top:5px">Sua chave não é salva, ela é usada apenas nesta sessão do navegador.</p>
+    </div>
+
     <div class="divider"></div>
 
     <div class="tab-switcher">
@@ -126,7 +133,6 @@ nav a.active{color:#fff;background:rgba(26,158,143,.3);border:1px solid rgba(26,
       <button class="tab-btn" onclick="switchTab('capa',this)">📘 Capa de Apostila</button>
     </div>
 
-    <!-- TAB INFOGRÁFICO -->
     <div class="tab-content active" id="tab-infografico">
       <div class="form-group">
         <label class="form-label"><span class="icon">📚</span>Disciplina</label>
@@ -158,7 +164,6 @@ nav a.active{color:#fff;background:rgba(26,158,143,.3);border:1px solid rgba(26,
       <p class="timer-tag">⏱ Leva cerca de 30 segundos</p>
     </div>
 
-    <!-- TAB CAPA -->
     <div class="tab-content" id="tab-capa">
       <div class="form-group">
         <label class="form-label"><span class="icon">📚</span>Disciplina</label>
@@ -192,7 +197,6 @@ nav a.active{color:#fff;background:rgba(26,158,143,.3);border:1px solid rgba(26,
   </div>
 
   <div class="right-panel">
-    <!-- INFOGRÁFICO PANEL -->
     <div id="infografico-panel">
       <div class="empty-state" id="emptyState">
         <div class="empty-icon">🎓</div>
@@ -215,7 +219,6 @@ nav a.active{color:#fff;background:rgba(26,158,143,.3);border:1px solid rgba(26,
       </div>
     </div>
 
-    <!-- CAPA PANEL -->
     <div id="capa-panel" style="display:none">
       <div class="cover-preview-wrap">
         <div class="cover-preview">
@@ -268,16 +271,207 @@ function switchTab(tab,btn){
 // INFOGRÁFICO GENERATOR
 // =============================================
 async function gerarInfografico(){
+  const apiKey = document.getElementById('apiKey').value.trim();
+  const btn = document.getElementById('btnGerar');
+  
+  if(!apiKey){
+    alert('Por favor, insira sua chave da API da Anthropic no topo da página.');
+    return;
+  }
+
   const disciplina=document.getElementById('disciplina').value.trim();
   const assunto=document.getElementById('assunto').value.trim();
   const publico=document.getElementById('publico').value;
   const referencia=document.getElementById('referencia').value.trim();
   if(!disciplina||!assunto){alert('Preencha a Disciplina e o Assunto.');return;}
 
-  const btn=document.getElementById('btnGerar');
   btn.classList.add('loading');
   document.getElementById('emptyState').style.display='none';
   document.getElementById('infogResult').classList.remove('show');
   document.getElementById('infogLoading').classList.add('show');
 
-  const system=`
+  const system=`Você é um designer educacional especialista em criar infográficos HTML visuais para apostilas brasileiras, no estilo dos exemplos: layout colorido com personagem cartoon, seções numeradas, boxes de conteúdo, fórmulas em destaque, exemplos práticos.
+
+REGRAS ABSOLUTAS:
+1. Responda APENAS com HTML — sem markdown, sem blocos de código, sem texto explicativo fora do HTML.
+2. Comece com <div class="infog-wrapper"> e termine com </div>. NÃO inclua DOCTYPE, html, head, body.
+3. Use <style> interna no início do div para todos os estilos.
+4. Use a fonte Nunito (já disponível): font-family:'Nunito',sans-serif
+
+DESIGN OBRIGATÓRIO (imite exatamente este estilo):
+- Cabeçalho colorido com título da disciplina em grande + subtítulo do assunto
+- Fundo branco com bordas arredondadas e sombra suave
+- 4 a 5 seções numeradas com círculo colorido (ex: ① ② ③ ④)
+- Cada seção tem: título em negrito + box colorido com conteúdo
+- PERSONAGEM SVG: estudante ou professor em estilo cartoon simples no cabeçalho ou lateralmente
+- Fórmulas/definições em box com fundo colorido e fonte grande em destaque
+- Exemplos práticos com cálculo passo a passo em box cinza/bege
+- Comparativos lado a lado (flex row) quando fizer sentido
+- Setas SVG entre elementos relacionados
+- Cores vibrantes: use paleta alegre (azul #4d96ff, verde #6bcb77, laranja #ff9f43, roxo #a29bfe, vermelho #ff6b6b)
+- Ícones/emojis relevantes em cada seção
+- Rodapé com dica de ouro ou resumo
+- width:100%; padding:24px; sem altura fixa
+
+CONTEÚDO: Pedagogicamente correto, completo, com exemplos reais e numéricos. TODO em português do Brasil.`;
+
+  const userMsg=`Disciplina: ${disciplina}
+Assunto: ${assunto}
+Público: ${publico||'Ensino médio'}
+${referencia?'Conteúdo de referência:\n'+referencia:''}
+
+Crie o infográfico visual completo no estilo apostila educacional brasileira.`;
+
+  try{
+    const resp=await fetch("https://api.anthropic.com/v1/messages",{
+      method:"POST",
+      headers:{
+        "Content-Type":"application/json",
+        "x-api-key": apiKey,
+        "anthropic-version": "2023-06-01",
+        "anthropic-dangerous-direct-browser-access": "true"
+      },
+      body:JSON.stringify({
+        model:"claude-3-5-sonnet-20241022",
+        max_tokens:8000,
+        system,
+        messages:[{role:"user",content:userMsg}]
+      })
+    });
+
+    if (!resp.ok) {
+      const errorData = await resp.json();
+      throw new Error(`Erro na API: ${errorData.error?.message || resp.statusText}`);
+    }
+
+    const data=await resp.json();
+    let html=data.content.map(i=>i.text||'').join('');
+    html=html.replace(/^```[\w]*\n?/,'').replace(/\n?```$/,'').trim();
+    document.getElementById('infogTitle').textContent=`${disciplina}: ${assunto}`;
+    document.getElementById('infogFrame').innerHTML=html;
+    document.getElementById('infogLoading').classList.remove('show');
+    document.getElementById('infogResult').classList.add('show');
+  }catch(e){
+    console.error(e);
+    alert('Erro: ' + e.message);
+    document.getElementById('infogLoading').classList.remove('show');
+    document.getElementById('emptyState').style.display='';
+  }finally{
+    btn.classList.remove('loading');
+  }
+}
+
+function baixarInfografico(){
+  const content=document.getElementById('infogFrame').innerHTML;
+  const disciplina=document.getElementById('disciplina').value||'infografico';
+  const assunto=document.getElementById('assunto').value||'educacional';
+  const html=`<!DOCTYPE html><html lang="pt-BR"><head><meta charset="UTF-8"><title>${disciplina} - ${assunto}</title><link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet"></head><body style="margin:0;padding:20px;background:#f0f0f0;display:flex;justify-content:center">${content}</body></html>`;
+  const blob=new Blob([html],{type:'text/html'});
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(blob);
+  a.download=`infografico-${disciplina.toLowerCase().replace(/\s+/g,'-')}.html`;
+  a.click();
+}
+
+// =============================================
+// CAPA GENERATOR
+// =============================================
+const ICONS_MAP={
+  quimica:'⚗️ 🧪 🔬 ⚛️ 🧬 💊 🧲 🌡️ 🔥 💧',
+  fisica:'⚡ 🔭 🧲 💡 🌊 📐 📏 ⚖️ 🌡️ 🔋',
+  biologia:'🌱 🧬 🔬 🌿 🦠 🦋 🧫 🌸 💉 🧠',
+  matematica:'📐 📏 🔢 ➕ ✖️ 📊 📈 🎯 💯 ∑',
+  historia:'📜 🏛️ ⚔️ 🗺️ 👑 🏺 📖 🕰️ 🌍 🏰',
+  geografia:'🌍 🗺️ 🏔️ 🌊 🧭 🌋 🏜️ 🌧️ ☀️ 🌿',
+  portugues:'📖 ✍️ 📝 🖊️ 📚 💬 🗣️ 📰 🎭 📜',
+  ingles:'🇬🇧 📖 💬 🌐 ✍️ 🎙️ 📝 🗣️ 📚 🎓',
+  arte:'🎨 🖌️ 🖼️ ✏️ 🎭 🎶 🎸 🎬 📸 🌈',
+  default:'📐 🔬 🧬 🌍 📊 ⚗️ 🔭 🧪 📏 💡'
+};
+function getIcons(d){
+  const k=(d||'').toLowerCase();
+  for(const[key,val]of Object.entries(ICONS_MAP)){if(key!=='default'&&k.includes(key))return val;}
+  return ICONS_MAP.default;
+}
+function atualizarPreviewCapa(){
+  const disc=document.getElementById('capa-disciplina').value.trim();
+  const topo=document.getElementById('capa-topo').value.trim();
+  const frase=document.getElementById('capa-frase').value.trim();
+  document.getElementById('prevDisciplina').textContent=disc?disc.toUpperCase():'DISCIPLINA';
+  document.getElementById('prevTopo').textContent=topo||'Fichas Desenhadas';
+  document.getElementById('prevFrase').textContent=frase||'Aprenda de forma visual e divertida!';
+  document.getElementById('prevIcons').textContent=getIcons(disc);
+}
+async function gerarPromptCapa(){
+  const apiKey = document.getElementById('apiKey').value.trim();
+  const btn = document.getElementById('btnGerarCapa');
+
+  if(!apiKey){
+    alert('Por favor, insira sua chave da API da Anthropic no topo da página.');
+    return;
+  }
+
+  const disciplina=document.getElementById('capa-disciplina').value.trim();
+  const topo=document.getElementById('capa-topo').value.trim();
+  const frase=document.getElementById('capa-frase').value.trim();
+  const estilo=document.getElementById('capa-estilo').value;
+  
+  if(!disciplina){alert('Informe a Disciplina.');return;}
+  
+  btn.classList.add('loading');
+  document.getElementById('capaEmptyState').style.display='none';
+  document.getElementById('capaResult').classList.remove('visible');
+  
+  try{
+    const resp=await fetch("https://api.anthropic.com/v1/messages",{
+      method:"POST",
+      headers:{
+        "Content-Type":"application/json",
+        "x-api-key": apiKey,
+        "anthropic-version": "2023-06-01",
+        "anthropic-dangerous-direct-browser-access": "true"
+      },
+      body:JSON.stringify({
+        model:"claude-3-5-sonnet-20241022",
+        max_tokens:800,
+        system:`Especialista em capas de apostilas educacionais brasileiras. Responda APENAS JSON válido sem markdown:
+{"frase_gerada":"string","prompt_capa":"string em inglês para gerador de imagem"}
+O prompt deve descrever: capa vertical estilo apostila, fundo de papel quadriculado branco, título em letras 3D coloridas infladas com gradiente vibrante, muitos ícones/doodles temáticos ao redor, estudante do ensino médio como personagem, texto superior e inferior conforme dados.`,
+        messages:[{role:"user",content:`Disciplina:${disciplina}\nTexto superior:${topo||'Apostila Visual'}\nFrase inferior:${frase||'(gerar)'}\nEstilo:${estilo}`}]
+      })
+    });
+
+    if (!resp.ok) {
+      const errorData = await resp.json();
+      throw new Error(`Erro na API: ${errorData.error?.message || resp.statusText}`);
+    }
+
+    const data=await resp.json();
+    const raw=data.content.map(i=>i.text||'').join('').replace(/```json|```/g,'').trim();
+    const result=JSON.parse(raw);
+    const fraseReal=frase||result.frase_gerada||'Aprenda de forma visual!';
+    document.getElementById('prevFrase').textContent=fraseReal;
+    document.getElementById('sumDisciplina').textContent=disciplina;
+    document.getElementById('sumTopo').textContent=topo||'Apostila Visual';
+    document.getElementById('sumFrase').textContent=fraseReal;
+    document.getElementById('sumEstilo').textContent=estilo;
+    document.getElementById('capaPromptText').textContent=result.prompt_capa;
+    document.getElementById('capaResult').classList.add('visible');
+  }catch(e){
+    console.error(e);
+    alert('Erro ao gerar prompt de capa: ' + e.message);
+  }finally{
+    btn.classList.remove('loading');
+  }
+}
+function copiarTexto(id,btnId){
+  const text=document.getElementById(id).textContent;
+  navigator.clipboard.writeText(text).then(()=>{
+    const btn=document.getElementById(btnId);const prev=btn.textContent;
+    btn.textContent='✅ Copiado!';btn.classList.add('copied');
+    setTimeout(()=>{btn.textContent=prev;btn.classList.remove('copied');},2000);
+  });
+}
+</script>
+</body>
+</html>

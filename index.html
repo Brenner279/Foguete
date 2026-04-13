@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gerador de Prompt Educacional</title>
+    <title>Gerador de Prompts Educacionais Professor Michel Brenner</title>
     <style>
         * {
             box-sizing: border-box;
@@ -19,15 +19,70 @@
             color: #333;
         }
 
-        .container {
-            background-color: #ffffff;
+        .main-wrapper {
+            display: flex;
+            gap: 20px;
             width: 100%;
-            max-width: 600px;
+            max-width: 1100px;
+            align-items: flex-start;
+        }
+
+        .panel {
+            background-color: #ffffff;
             border-radius: 16px;
             padding: 30px;
             box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+            flex: 1;
+            width: 100%;
         }
 
+        /* Estilos das Abas (Tabs) */
+        .tabs-container {
+            display: flex;
+            background-color: #f1f5f9;
+            border-radius: 12px;
+            padding: 5px;
+            margin-bottom: 25px;
+        }
+
+        .tab-btn {
+            flex: 1;
+            padding: 10px;
+            border: none;
+            background: transparent;
+            font-size: 0.95rem;
+            font-weight: 600;
+            color: #64748b;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .tab-btn.active {
+            background-color: #ffffff;
+            color: #0f172a;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+
+        .tab-content {
+            display: none;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(5px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Estilos do Formulário */
         .header {
             display: flex;
             justify-content: space-between;
@@ -61,6 +116,22 @@
             gap: 6px;
         }
 
+        .badge {
+            background-color: #f1f5f9;
+            color: #64748b;
+            font-size: 0.75rem;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-weight: normal;
+        }
+
+        .hint {
+            display: block;
+            font-size: 0.8rem;
+            color: #94a3b8;
+            margin-top: 5px;
+        }
+
         input[type="text"], select, textarea {
             width: 100%;
             padding: 12px 15px;
@@ -81,7 +152,8 @@
             min-height: 80px;
         }
 
-        button {
+        /* Botões de Ação */
+        .btn-gerar {
             width: 100%;
             background-color: #2b6cb0;
             color: white;
@@ -95,23 +167,46 @@
             margin-top: 10px;
         }
 
-        button:hover {
-            background-color: #1a4971;
-        }
+        .btn-gerar:hover { background-color: #1a4971; }
 
-        .result-container {
-            margin-top: 30px;
-            background-color: #f8fafc;
-            border: 1px dashed #cbd5e1;
-            border-radius: 12px;
-            padding: 20px;
-            display: none;
-        }
-
-        .result-container h3 {
-            margin-top: 0;
+        .btn-gerar-capa {
+            width: 100%;
+            background-color: #f59e0b;
+            color: white;
+            border: none;
+            padding: 14px;
             font-size: 1rem;
+            font-weight: bold;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: background-color 0.2s;
+            margin-top: 10px;
+        }
+
+        .btn-gerar-capa:hover { background-color: #d97706; }
+
+        .hint-center {
+            text-align: center;
+            font-size: 0.8rem;
+            color: #94a3b8;
+            margin-top: 10px;
+        }
+
+        /* Painel da direita onde sai o resultado */
+        .result-panel {
+            background-color: #f8fafc;
+            border: 2px dashed #cbd5e1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .result-panel h3 {
+            margin-top: 0;
+            font-size: 1.1rem;
             color: #475569;
+            border-bottom: 1px solid #e2e8f0;
+            padding-bottom: 10px;
+            margin-bottom: 15px;
         }
 
         #prompt-output {
@@ -119,92 +214,230 @@
             white-space: pre-wrap;
             word-wrap: break-word;
             color: #1e293b;
-            line-height: 1.5;
+            line-height: 1.6;
+            flex-grow: 1;
+            margin-bottom: 20px;
+            font-size: 0.95rem;
         }
         
-        .copy-btn {
-            background-color: #cbd5e1;
-            color: #333;
-            margin-top: 15px;
+        button.btn-copiar {
+            width: 100%;
+            background-color: #10b981;
+            color: white;
+            border: none;
+            padding: 14px;
+            font-size: 1rem;
+            font-weight: bold;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: background-color 0.2s;
+            display: none;
+            justify-content: center;
+            align-items: center;
+            gap: 8px;
         }
         
-        .copy-btn:hover {
-            background-color: #94a3b8;
+        button.btn-copiar:hover {
+            background-color: #059669;
+        }
+
+        @media (max-width: 768px) {
+            .main-wrapper { flex-direction: column; }
         }
     </style>
 </head>
 <body>
 
-<div class="container">
-    <div class="header">
-        <h2>📚 Entrada</h2>
-        <span>Leva menos de 1 min</span>
+<div class="main-wrapper">
+    <div class="panel">
+        
+        <div class="tabs-container">
+            <button class="tab-btn active" onclick="switchTab('tab-infografico', this)">
+                📊 Infográfico
+            </button>
+            <button class="tab-btn" onclick="switchTab('tab-capa', this)">
+                📘 Capa de Apostila
+            </button>
+        </div>
+
+        <div id="tab-infografico" class="tab-content active">
+            <div class="header">
+                <h2>Entrada</h2>
+                <span>Leva menos de 1 min</span>
+            </div>
+
+            <div class="form-group">
+                <label>📖 Disciplina</label>
+                <input type="text" id="info-disciplina" value="Matemática">
+            </div>
+
+            <div class="form-group">
+                <label>✨ Assunto</label>
+                <input type="text" id="info-assunto" value="Progressão Aritmética (P.A.)">
+            </div>
+
+            <div class="form-group">
+                <label>👥 Público / faixa etária</label>
+                <select id="info-publico">
+                    <option value="Ensino fundamental">Ensino fundamental</option>
+                    <option value="Ensino médio" selected>Ensino médio</option>
+                    <option value="Ensino superior">Ensino superior</option>
+                    <option value="Adultos">Adultos</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label>🎨 Estilo da ilustração</label>
+                <select id="info-estilo">
+                    <option value="Hand-drawn" selected>Hand-drawn</option>
+                    <option value="Disney/Pixar">Disney/Pixar 3D</option>
+                    <option value="Minimalista">Minimalista</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label>Códigos da BNCC (opcional)</label>
+                <input type="text" id="info-bncc" placeholder="Ex: EM13MAT507">
+            </div>
+
+            <div class="form-group">
+                <label>Texto de referência (opcional)</label>
+                <textarea id="info-textoRef" placeholder="Trecho do material..."></textarea>
+            </div>
+
+            <button class="btn-gerar" onclick="gerarPromptInfografico()">Gerar Prompt de Infográfico</button>
+        </div>
+
+        <div id="tab-capa" class="tab-content">
+            <div class="header">
+                <h2>Capa de Apostila</h2>
+            </div>
+
+            <div class="form-group">
+                <label>📚 Disciplina / Assunto</label>
+                <input type="text" id="capa-disciplina" placeholder="Ex: Química, Física, MMC..." value="MMC">
+            </div>
+
+            <div class="form-group">
+                <label>🏷️ Texto superior</label>
+                <input type="text" id="capa-top-text" placeholder="Ex: Fichas Desenhadas, Apostila Visual..." value="Fichas Desenhadas">
+                <span class="hint">Aparece acima do título principal</span>
+            </div>
+
+            <div class="form-group">
+                <label>💬 Frase inferior <span class="badge">opcional</span></label>
+                <input type="text" id="capa-bottom-text" placeholder="Ex: As moléculas ganharam vida!">
+                <span class="hint">Se vazio, será gerada automaticamente baseada no assunto</span>
+            </div>
+
+            <div class="form-group">
+                <label>🎨 Estilo visual</label>
+                <select id="capa-estilo">
+                    <option value="Hand-drawn doodle" selected>Hand-drawn / Doodle</option>
+                    <option value="3D Pixar style">3D Pixar Style</option>
+                    <option value="Minimalist geometric">Minimalista Geométrico</option>
+                </select>
+            </div>
+
+            <button class="btn-gerar-capa" onclick="gerarPromptCapa()">🎨 Gerar Prompt de Capa</button>
+            <div class="hint-center">⏱️ Rápido e fácil</div>
+        </div>
+
     </div>
 
-    <div class="form-group">
-        <label>📖 Disciplina</label>
-        <input type="text" id="disciplina" value="Matemática" placeholder="Ex: Matemática, Biologia...">
-    </div>
-
-    <div class="form-group">
-        <label>✨ Assunto</label>
-        <input type="text" id="assunto" value="Progressão Aritmética (P.A.)" placeholder="Ex: Genótipo, P.G...">
-    </div>
-
-    <div class="form-group">
-        <label>👥 Público / faixa etária</label>
-        <select id="publico">
-            <option value="Ensino fundamental">Ensino fundamental</option>
-            <option value="Ensino médio" selected>Ensino médio</option>
-            <option value="Ensino superior">Ensino superior</option>
-            <option value="Adultos">Adultos</option>
-        </select>
-    </div>
-
-    <div class="form-group">
-        <label>🎨 Estilo da ilustração</label>
-        <select id="estilo">
-            <option value="Hand-drawn" selected>Hand-drawn</option>
-            <option value="Disney/Pixar">Disney/Pixar 3D</option>
-            <option value="Minimalista">Minimalista</option>
-            <option value="Realista">Realista</option>
-            <option value="Vetor Flat">Vetor Flat</option>
-        </select>
-    </div>
-
-    <div class="form-group">
-        <label>Códigos da BNCC (opcional)</label>
-        <input type="text" id="bncc" placeholder="Ex: EM13MAT507">
-    </div>
-
-    <div class="form-group">
-        <label>Texto de referência (opcional)</label>
-        <textarea id="textoRef" placeholder="Ex: trecho do material, definição do professor, contexto específico..."></textarea>
-    </div>
-
-    <button onclick="gerarPrompt()">Gerar Prompt</button>
-
-    <div class="result-container" id="result-box">
-        <h3>Prompt Gerado:</h3>
-        <div id="prompt-output"></div>
-        <button class="copy-btn" onclick="copiarPrompt()">Copiar Prompt</button>
+    <div class="panel result-panel" id="result-box">
+        <h3>📝 Prompt Gerado</h3>
+        <div id="prompt-output">Preencha os dados e clique no botão para gerar o prompt.</div>
+        <button class="btn-copiar" id="btn-copiar" onclick="copiarPrompt()">📋 Copiar Prompt</button>
     </div>
 </div>
 
 <script>
-    function gerarPrompt() {
-        const disciplina = document.getElementById('disciplina').value.trim() || '[Disciplina]';
-        const assunto = document.getElementById('assunto').value.trim() || '[Assunto]';
-        const publico = document.getElementById('publico').value;
-        const estilo = document.getElementById('estilo').value;
-        const bncc = document.getElementById('bncc').value.trim();
-        const textoRef = document.getElementById('textoRef').value.trim();
+    // Função para alternar as abas
+    function switchTab(tabId, btnElement) {
+        // Remove a classe ativa de todas as abas e conteúdos
+        document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+        
+        // Adiciona a classe ativa na aba selecionada
+        document.getElementById(tabId).classList.add('active');
+        btnElement.classList.add('active');
+        
+        // Limpa o painel de resultados ao trocar de aba
+        document.getElementById('prompt-output').textContent = "Preencha os dados e clique no botão para gerar o prompt.";
+        document.getElementById('btn-copiar').style.display = 'none';
+    }
+
+    // Função para gerar Infográfico (Aba 1)
+    function gerarPromptInfografico() {
+        const disciplina = document.getElementById('info-disciplina').value.trim() || '[Disciplina]';
+        const assunto = document.getElementById('info-assunto').value.trim() || '[Assunto]';
+        const publico = document.getElementById('info-publico').value;
+        const estilo = document.getElementById('info-estilo').value;
+        const bncc = document.getElementById('info-bncc').value.trim();
+        const textoRef = document.getElementById('info-textoRef').value.trim();
 
         let prompt = `Crie um pôster de infográfico educacional sobre "${assunto}" em ${disciplina}. Estilo educacional brasileiro. Siga RIGOROSAMENTE o estilo de ilustração: ${estilo}. Não use figuras infantis ou imagens de crianças. Se houver personagens, eles devem ser obrigatoriamente da faixa etária de ${publico.toLowerCase()} ou adultos, condizentes com o público alvo. Use elementos visuais que tenham relação direta com o conteúdo, use ilustrações que representem cada conceito de forma clara. Blocos de texto curtos e mínimos, com rótulos em negrito e legíveis. Priorize a explicação visual em vez do texto. Layout limpo e estruturado, com fundo branco. Seções do infográfico com painéis de comparação, balões de fala e palavras-chave destacadas. Se houver personagens, eles devem representar estudantes ou profissionais adequados à faixa etária especificada. Altamente didático, com aparência de material de estudo brasileiro (estilo apostila). Cores vibrantes e harmoniosas. Inclua comparações lado a lado quando fizer sentido. Garanta consistência lógica, sem contradições e sem erros matemáticos ou numéricos nos rótulos ou exemplos. Público-alvo: ${publico}, tom objetivo, focado em compreensão e revisão. Layout mais sofisticado, gráficos limpos e hierarquia forte. Todo o conteúdo textual deve estar rigorosamente em português do Brasil, sem termos em inglês ou outras variações do português.`;
 
-        if (bncc) {
-            prompt += `\n\nCertifique-se de que a abordagem visual e textual contemple as habilidades do código da BNCC: ${bncc}.`;
+        if (bncc) prompt += `\n\nCertifique-se de que a abordagem visual e textual contemple as habilidades do código da BNCC: ${bncc}.`;
+        if (textoRef) prompt += `\n\nUtilize o seguinte texto como base de referência e contexto principal para o infográfico:\n"${textoRef}"`;
+
+        mostrarResultado(prompt);
+    }
+
+    // Função para gerar Capa de Apostila (Aba 2)
+    function gerarPromptCapa() {
+        const assunto = document.getElementById('capa-disciplina').value.trim() || '[Disciplina/Assunto]';
+        const topText = document.getElementById('capa-top-text').value.trim() || 'Apostila Visual';
+        let bottomText = document.getElementById('capa-bottom-text').value.trim();
+        const estilo = document.getElementById('capa-estilo').value;
+
+        // Lógica de automação da frase inferior
+        if (!bottomText) {
+            bottomText = `${assunto} desenhada para entender`;
         }
 
-        if (textoRef) {
-            prompt +=
+        const prompt = `TOP TEXT: "${topText}" in a handwritten brush script font style, placed at the top of the cover.
+
+MAIN TITLE: "${assunto}" in large, bold, inflated 3D colorful gradient typography with shine, glow and depth effects, placed centrally and prominently.
+
+BOTTOM TEXT: "${bottomText}" in a smaller elegant font at the bottom.
+
+BACKGROUND: Light notebook grid/squared paper texture.
+
+ILLUSTRATIONS: Scattered all around the title, hand-drawn colorful doodle illustrations of subject-specific educational icons and symbols related to ${assunto}. Every illustration must be directly related to ${assunto}. High level of detail, vibrant colors, playful but organized layout.
+
+STYLE: ${estilo} illustrations, colorful, educational, professional book cover quality. Rich composition (NOT minimalist). Subject-specific illustrations only - NO generic stick figures. No repeated elements, NO unrelated icons.
+
+The final result must look like a professional Brazilian educational material cover ("apostila" style), visually attractive, rich in details, and fully coherent with the subject ${assunto}.`;
+
+        mostrarResultado(prompt);
+    }
+
+    // Função auxiliar para exibir o resultado e ativar o botão de copiar
+    function mostrarResultado(texto) {
+        document.getElementById('prompt-output').textContent = texto;
+        const btnCopiar = document.getElementById('btn-copiar');
+        btnCopiar.style.display = 'flex';
+        btnCopiar.innerHTML = '📋 Copiar Prompt';
+        btnCopiar.style.backgroundColor = '#10b981';
+    }
+
+    // Função para copiar o texto
+    function copiarPrompt() {
+        const promptText = document.getElementById('prompt-output').textContent;
+        const btnCopiar = document.getElementById('btn-copiar');
+
+        navigator.clipboard.writeText(promptText).then(() => {
+            btnCopiar.innerHTML = '✅ Copiado com sucesso!';
+            btnCopiar.style.backgroundColor = '#059669';
+            setTimeout(() => {
+                btnCopiar.innerHTML = '📋 Copiar Prompt';
+                btnCopiar.style.backgroundColor = '#10b981';
+            }, 2000);
+        }).catch(err => alert('Erro ao copiar: ' + err));
+    }
+</script>
+
+</body>
+</html>

@@ -38,7 +38,6 @@
             min-height: 100vh;
         }
 
-        /* --- NOVO: Estilos do Cabeçalho e Rodapé --- */
         .app-header {
             text-align: center;
             margin-top: 20px;
@@ -76,7 +75,6 @@
             text-decoration: none;
             font-weight: bold;
         }
-        /* ------------------------------------------- */
 
         .main-wrapper {
             display: flex;
@@ -356,6 +354,7 @@
             display: flex;
             gap: 15px;
         }
+
         .row-group .form-group {
             flex: 1;
         }
@@ -378,23 +377,25 @@
 </header>
 
 <div class="main-wrapper">
+    <!-- Painel de Configurações -->
     <div class="panel">
         <div class="tabs-container">
-            <button class="tab-btn active" onclick="switchTab('tab-infografico', this)">📊 Infográfico</button>
+            <button class="tab-btn active" onclick="switchTab('tab-infografico', this)">📊 Infográfico A4</button>
             <button class="tab-btn" onclick="switchTab('tab-capa', this)">📘 Capa</button>
             <button class="tab-btn" onclick="switchTab('tab-exercicios', this)">📝 Exercícios</button>
         </div>
 
+        <!-- ABA: INFOGRÁFICO A4 -->
         <div id="tab-infografico" class="tab-content active">
-            <div class="header"><h2>Configurar Infográfico</h2></div>
+            <div class="header"><h2>Configurar Ficha de Estudos / Resumo A4</h2></div>
             
-            <div class="section-title">📝 Conteúdo Didático</div>
+            <div class="section-title">📚 Conteúdo Didático</div>
             <div class="form-group">
-                <label>📖 Disciplina</label>
+                <label>📌 Disciplina</label>
                 <input type="text" id="info-disciplina" value="Matemática">
             </div>
             <div class="form-group">
-                <label>✨ Assunto</label>
+                <label>🎯 Assunto</label>
                 <input type="text" id="info-assunto" value="Sistemas Lineares">
             </div>
             <div class="form-group">
@@ -407,8 +408,8 @@
                 </select>
             </div>
 
-            <div class="section-title">👨‍🏫 Personagem Padrão (Avatar)</div>
-
+            <div class="section-title">👤 Personagem Padrão (Avatar)</div>
+            
             <div class="hint-box">
                 <span class="hint-title">💡 Dica de Ouro: Como se descrever?</span>
                 <p class="hint-desc">Envie uma foto sua na IA junto com o texto abaixo. Depois, cole a resposta no campo "Descrição do Personagem".</p>
@@ -419,8 +420,8 @@
             </div>
 
             <div class="form-group">
-                <label>👤 Descrição do Personagem</label>
-                <input type="text" id="avatar-desc" placeholder="Cole aqui a descrição gerada pela IA ou digite a sua..." value="Professor sorridente com óculos de armação escura, cabelo curto castanho e camisa polo">
+                <label>📝 Descrição do Personagem <span class="badge">Salvo automaticamente</span></label>
+                <input type="text" id="avatar-desc" placeholder="Cole aqui a descrição gerada pela IA ou digite a sua..." oninput="salvarAvatar()">
             </div>
             
             <div class="form-group">
@@ -432,31 +433,28 @@
                 </select>
             </div>
 
-            <button class="btn-gerar btn-info" onclick="gerarPrompt('infografico')">✨ Gerar Infográfico com Avatar</button>
+            <button class="btn-gerar btn-info" onclick="gerarPrompt('infografico')">✨ Gerar Prompt de Infográfico A4</button>
         </div>
 
+        <!-- ABA: CAPA -->
         <div id="tab-capa" class="tab-content">
             <div class="header">
                 <h2>Capa de Apostila</h2>
             </div>
-
             <div class="form-group">
-                <label>📚 Disciplina / Assunto</label>
+                <label>📌 Disciplina / Assunto</label>
                 <input type="text" id="capa-disciplina" placeholder="Ex: Química, Física, MMC..." value="MMC">
             </div>
-
             <div class="form-group">
-                <label>🏷️ Texto superior</label>
+                <label>🔤 Texto superior</label>
                 <input type="text" id="capa-top-text" placeholder="Ex: Fichas Desenhadas, Apostila Visual..." value="Fichas Desenhadas">
                 <span class="hint">Aparece acima do título principal</span>
             </div>
-
             <div class="form-group">
-                <label>💬 Frase inferior <span class="badge">opcional</span></label>
+                <label>📝 Frase inferior <span class="badge">opcional</span></label>
                 <input type="text" id="capa-bottom-text" placeholder="Ex: As moléculas ganharam vida!">
                 <span class="hint">Se vazio, será gerada automaticamente baseada no assunto</span>
             </div>
-
             <div class="form-group">
                 <label>🎨 Estilo visual</label>
                 <select id="capa-estilo">
@@ -466,20 +464,21 @@
                 </select>
             </div>
 
-            <button class="btn-gerar btn-capa" onclick="gerarPrompt('capa')">🎨 Gerar Prompt de Capa</button>
-            <div class="hint-center">⏱️ Rápido e fácil</div>
+            <button class="btn-gerar btn-capa" onclick="gerarPrompt('capa')">📘 Gerar Prompt de Capa</button>
+            <div class="hint-center">Rápido e fácil</div>
         </div>
 
+        <!-- ABA: EXERCÍCIOS -->
         <div id="tab-exercicios" class="tab-content">
             <div class="header"><h2>Criação de Exercícios</h2></div>
             
             <div class="form-group">
-                <label>📖 Disciplina</label>
+                <label>📌 Disciplina</label>
                 <input type="text" id="ex-disciplina" value="Matemática">
             </div>
             
             <div class="form-group">
-                <label>✨ Assunto Específico</label>
+                <label>🎯 Assunto Específico</label>
                 <input type="text" id="ex-assunto" placeholder="Ex: Equações de 2º Grau com Bhaskara" value="Progressão Aritmética">
             </div>
 
@@ -521,7 +520,7 @@
             </div>
 
             <div class="form-group">
-                <label>🎯 Contexto e Estilo</label>
+                <label>🧠 Contexto e Estilo</label>
                 <select id="ex-contexto">
                     <option value="situações contextualizadas do dia a dia e problemas reais" selected>Problemas do Dia a Dia (Contextualizado)</option>
                     <option value="modelo ENEM/SAEB, focando em interpretação de texto e lógica">Modelo ENEM / Avaliações Externas (SAEB)</option>
@@ -532,10 +531,12 @@
 
             <button class="btn-gerar btn-exercicios" onclick="gerarPrompt('exercicios')">📝 Gerar Prompt de Exercícios</button>
         </div>
+
     </div>
 
+    <!-- Painel de Resultados -->
     <div class="panel result-panel">
-        <h3>📝 Prompt Principal Gerado</h3>
+        <h3>🤖 Prompt Principal Gerado</h3>
         <div id="prompt-output">Configure os campos ao lado para gerar seu prompt personalizado.</div>
         <button class="btn-copiar" id="btn-copiar" onclick="copiarPrompt()">📋 Copiar Prompt Principal</button>
     </div>
@@ -546,11 +547,33 @@
 </footer>
 
 <script>
+    // Carregar o avatar salvo no LocalStorage assim que a página abre
+    document.addEventListener("DOMContentLoaded", () => {
+        const avatarSalvo = localStorage.getItem("avatarDesc");
+        if (avatarSalvo) {
+            document.getElementById("avatar-desc").value = avatarSalvo;
+        } else {
+            // Valor padrão caso não tenha nada salvo
+            document.getElementById("avatar-desc").value = "Professor sorridente com óculos de armação escura, cabelo curto castanho e camisa polo";
+        }
+    });
+
+    // Função para salvar o avatar sempre que o usuário digitar (oninput)
+    function salvarAvatar() {
+        const avatar = document.getElementById("avatar-desc").value;
+        localStorage.setItem("avatarDesc", avatar);
+    }
+
     function switchTab(tabId, btnElement) {
+        // Remove a classe active de todas as abas e botões
         document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
         document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+        
+        // Adiciona active na aba atual
         document.getElementById(tabId).classList.add('active');
         btnElement.classList.add('active');
+        
+        // Esconde botão de copiar e reseta o output
         document.getElementById('btn-copiar').style.display = 'none';
         document.getElementById('prompt-output').textContent = "Aguardando nova configuração...";
     }
@@ -562,6 +585,7 @@
         navigator.clipboard.writeText(text).then(() => {
             btn.innerHTML = '✅ Copiado!';
             btn.style.backgroundColor = '#10b981';
+            
             setTimeout(() => {
                 btn.innerHTML = '📋 Copiar';
                 btn.style.backgroundColor = '#3b82f6';
@@ -579,22 +603,28 @@
             const avatar = document.getElementById('avatar-desc').value;
             const estilo = document.getElementById('avatar-estilo').value;
 
-            prompt = `Crie um pôster de infográfico educacional sobre "${assunto}" para a disciplina de ${disciplina}. 
-            
-CARACTERÍSTICA ESSENCIAL: O infográfico deve ser guiado por um personagem principal com as seguintes características: "${avatar}". Este personagem deve aparecer de forma consistente como o instrutor visual do material.
+            // Salva o avatar no momento da geração para garantir
+            salvarAvatar();
 
-REFERÊNCIA VISUAL (ATENÇÃO IA): Se houver uma imagem anexada a este prompt, utilize as características físicas da pessoa na foto para criar o rosto do personagem, mantendo a coerência com a descrição acima.
+            prompt = `Crie o design de um resumo didático estruturado em formato retrato (proporção vertical, tamanho folha A4) sobre o assunto "${assunto}" para a disciplina de ${disciplina}.
 
-ESTILO VISUAL: Rigorosamente seguindo o estilo "${estilo}". 
+PÚBLICO-ALVO: Estudantes de nível ${publico}.
 
-DETALHES DO LAYOUT:
-- Público-alvo: estudantes de nível ${publico}.
-- O personagem deve interagir com os conceitos (apontando para fórmulas, segurando elementos gráficos, balões de fala, etc).
-- Fundo limpo, preferencialmente branco ou papel de caderno.
-- Texto mínimo em português do Brasil, priorizando diagramas e ilustrações explicativas.
-- Use cores vibrantes e harmônicas.
-- Sem erros matemáticos ou simbólicos.`;
-        
+LAYOUT E ESTRUTURA (ATENÇÃO ESPECIAL):
+- O layout deve ser extremamente organizado, acadêmico e limpo.
+- Divida o espaço da página em caixas/painéis retangulares organizados, com bordas arredondadas e fundos em cores pastéis muito suaves (azul claro, verde claro, lilás, etc.) para separar os tópicos, definições, exemplos e propriedades.
+- Título principal bem destacado no topo da página.
+- O design deve simular uma "ficha de estudos" (cheat sheet) com foco em conteúdo técnico: simule a presença de textos estruturados em tópicos (bullet points), fórmulas, pequenas tabelas e gráficos simples.
+- MENOS IMAGENS E MAIS ESTRUTURA: Evite poluição visual e ilustrações decorativas soltas. Não crie um fundo confuso; use fundo branco. A prioridade é a organização didática dos blocos de conteúdo.
+
+USO DO PERSONAGEM (AVATAR):
+- O material deve conter o seguinte personagem atuando como professor/instrutor: "${avatar}".
+- APLICAÇÃO PONTUAL: O personagem NÃO deve ocupar o centro da página. Coloque-o de forma discreta em posições estratégicas (ex: apenas no canto superior esquerdo apontando para um balão de fala, e uma variação no canto inferior direito dando uma dica).
+- REFERÊNCIA VISUAL (ATENÇÃO IA): Se houver uma imagem anexada a este prompt, utilize as características físicas da pessoa na foto para criar o rosto do personagem, mantendo a coerência com a descrição.
+
+ESTILO VISUAL: Siga rigorosamente o estilo "${estilo}" para o render do personagem e elementos gráficos de cabeçalho.
+(Nota para a IA: renderize com proporção vertical estilo --ar 3:4 ou --ar 1:1.4).`;
+
         } else if (tipo === 'capa') {
             const assunto = document.getElementById('capa-disciplina').value.trim() || '[Disciplina/Assunto]';
             const topText = document.getElementById('capa-top-text').value.trim() || 'Apostila Visual';
@@ -605,20 +635,14 @@ DETALHES DO LAYOUT:
                 bottomText = `${assunto} desenhada para entender`;
             }
 
-            prompt = `TOP TEXT: "${topText}" in a handwritten brush script font style, placed at the top of the cover.
-
-MAIN TITLE: "${assunto}" in large, bold, inflated 3D colorful gradient typography with shine, glow and depth effects, placed centrally and prominently.
-
-BOTTOM TEXT: "${bottomText}" in a smaller elegant font at the bottom.
-
-BACKGROUND: Light notebook grid/squared paper texture.
-
-ILLUSTRATIONS: Scattered all around the title, hand-drawn colorful doodle illustrations of subject-specific educational icons and symbols related to ${assunto}. Every illustration must be directly related to ${assunto}. High level of detail, vibrant colors, playful but organized layout.
-
-STYLE: ${estilo} illustrations, colorful, educational, professional book cover quality. Rich composition (NOT minimalist). Subject-specific illustrations only - NO generic stick figures. No repeated elements, NO unrelated icons.
-
+            prompt = `TOP TEXT: "${topText}" in a handwritten brush script font style, placed at the top of the cover. 
+MAIN TITLE: "${assunto}" in large, bold, inflated 3D colorful gradient typography with shine, glow and depth effects, placed centrally and prominently. 
+BOTTOM TEXT: "${bottomText}" in a smaller elegant font at the bottom. 
+BACKGROUND: Light notebook grid/squared paper texture. 
+ILLUSTRATIONS: Scattered all around the title, hand-drawn colorful doodle illustrations of subject-specific educational icons and symbols related to ${assunto}. Every illustration must be directly related to ${assunto}. High level of detail, vibrant colors, playful but organized layout. 
+STYLE: ${estilo} illustrations, colorful, educational, professional book cover quality. Rich composition (NOT minimalist). Subject-specific illustrations only - NO generic stick figures. No repeated elements, NO unrelated icons. 
 The final result must look like a professional Brazilian educational material cover ("apostila" style), visually attractive, rich in details, and fully coherent with the subject ${assunto}.`;
-        
+
         } else if (tipo === 'exercicios') {
             const disciplina = document.getElementById('ex-disciplina').value;
             const assunto = document.getElementById('ex-assunto').value;
@@ -628,7 +652,7 @@ The final result must look like a professional Brazilian educational material co
             const contexto = document.getElementById('ex-contexto').value;
             const gabarito = document.getElementById('ex-gabarito').value;
 
-            prompt = `Atue como um professor conteudista especialista em ${disciplina}. Crie uma lista com ${qtd} exercícios inéditos sobre "${assunto}".
+            prompt = `Atue como um professor conteudista especialista em ${disciplina}. Crie uma lista com ${qtd} exercícios inéditos sobre "${assunto}". 
 
 PÚBLICO-ALVO: Estudantes do ${publico}. A linguagem, o vocabulário e a dificuldade devem ser estritamente calibrados para essa faixa etária.
 
@@ -662,6 +686,5 @@ ${gabarito === 'sim' ? 'RESOLUÇÃO: Forneça um GABARITO COMENTADO passo a pass
         });
     }
 </script>
-
 </body>
 </html>

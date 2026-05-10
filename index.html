@@ -3,13 +3,19 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Gerador de Prompts | Prof. Michel Brenner</title>
+
+<title>Assistente Criativo Educacional | Prof. Michel Brenner</title>
 
 <style>
+
 :root{
     --primary:#2563eb;
+    --primary-dark:#1d4ed8;
     --secondary:#7c3aed;
+    --secondary-dark:#6d28d9;
     --success:#10b981;
+    --success-dark:#059669;
+
     --bg:#f1f5f9;
     --panel:#ffffff;
     --text:#334155;
@@ -18,48 +24,78 @@
 }
 
 *{
-    box-sizing:border-box;
     margin:0;
     padding:0;
+    box-sizing:border-box;
     font-family:Arial, Helvetica, sans-serif;
 }
 
 body{
     background:var(--bg);
     color:var(--text);
-    padding:20px;
+    padding:25px;
 }
 
-.container{
-    max-width:1200px;
-    margin:auto;
+.header{
+    text-align:center;
+    margin-bottom:30px;
+}
+
+.header h1{
+    font-size:2.4rem;
+    color:var(--primary);
+    margin-bottom:10px;
+}
+
+.header p{
+    color:var(--muted);
+    font-size:1rem;
+}
+
+.wrapper{
     display:grid;
     grid-template-columns:1fr 1fr;
     gap:20px;
+    max-width:1400px;
+    margin:auto;
 }
 
 .panel{
     background:var(--panel);
     border-radius:18px;
     padding:25px;
-    box-shadow:0 10px 25px rgba(0,0,0,0.05);
+    box-shadow:0 10px 30px rgba(0,0,0,0.05);
 }
 
-h1{
-    text-align:center;
-    margin-bottom:10px;
-    color:var(--primary);
+.tabs{
+    display:flex;
+    gap:10px;
+    margin-bottom:25px;
+    flex-wrap:wrap;
 }
 
-.sub{
-    text-align:center;
-    color:var(--muted);
-    margin-bottom:30px;
+.tab-btn{
+    border:none;
+    background:#e2e8f0;
+    color:#475569;
+    padding:12px 18px;
+    border-radius:10px;
+    font-weight:bold;
+    cursor:pointer;
+    transition:.2s;
 }
 
-h2{
-    margin-bottom:20px;
-    color:var(--primary);
+.tab-btn.active{
+    background:var(--primary);
+    color:white;
+}
+
+.tab-content{
+    display:none;
+}
+
+.tab-content.active{
+    display:block;
 }
 
 .form-group{
@@ -76,9 +112,9 @@ input,
 select,
 textarea{
     width:100%;
-    padding:12px;
+    padding:13px;
+    border-radius:12px;
     border:1px solid var(--border);
-    border-radius:10px;
     background:#f8fafc;
     font-size:15px;
 }
@@ -91,41 +127,75 @@ textarea:focus{
     background:white;
 }
 
+textarea{
+    resize:vertical;
+}
+
 .btn{
     width:100%;
     border:none;
     padding:16px;
     border-radius:12px;
-    background:var(--primary);
-    color:white;
-    font-size:16px;
     font-weight:bold;
+    color:white;
     cursor:pointer;
     transition:.2s;
+    margin-top:10px;
+    font-size:15px;
 }
 
-.btn:hover{
-    background:#1d4ed8;
+.btn-info{
+    background:var(--primary);
 }
 
-.output{
+.btn-info:hover{
+    background:var(--primary-dark);
+}
+
+.btn-capa{
+    background:var(--secondary);
+}
+
+.btn-capa:hover{
+    background:var(--secondary-dark);
+}
+
+.btn-ex{
+    background:var(--success);
+}
+
+.btn-ex:hover{
+    background:var(--success-dark);
+}
+
+.result{
     background:#0f172a;
     color:#f8fafc;
-    border-radius:12px;
+    border-radius:14px;
     padding:20px;
-    min-height:500px;
+    min-height:650px;
     white-space:pre-wrap;
-    font-family:monospace;
     overflow:auto;
+    font-family:monospace;
+    line-height:1.5;
 }
 
 .copy-btn{
     margin-top:15px;
-    background:var(--success);
+    background:#f59e0b;
 }
 
 .copy-btn:hover{
-    background:#059669;
+    background:#d97706;
+}
+
+.section-title{
+    font-size:13px;
+    text-transform:uppercase;
+    letter-spacing:1px;
+    color:var(--primary);
+    margin:20px 0 10px;
+    font-weight:bold;
 }
 
 .badge{
@@ -133,140 +203,406 @@ textarea:focus{
     color:#1d4ed8;
     padding:3px 8px;
     border-radius:6px;
-    font-size:12px;
+    font-size:11px;
 }
 
-@media(max-width:900px){
-    .container{
+.hint{
+    font-size:13px;
+    color:var(--muted);
+    margin-top:5px;
+}
+
+@media(max-width:1000px){
+
+    .wrapper{
         grid-template-columns:1fr;
     }
+
 }
+
 </style>
 </head>
 
 <body>
 
-<h1>🚀 Assistente Criativo - Professor Brenner</h1>
-<p class="sub">
-Gerador avançado de prompts para infográficos educacionais, apostilas e materiais didáticos.
-</p>
-
-<div class="container">
-
-<!-- CONFIGURAÇÕES -->
-<div class="panel">
-
-<h2>📘 Gerador de Infográfico Educacional</h2>
-
-<div class="form-group">
-<label>📌 Disciplina</label>
-<input type="text" id="disciplina" value="Matemática">
+<div class="header">
+    <h1>🚀 Assistente Criativo Educacional</h1>
+    <p>
+        Gere prompts profissionais para infográficos, capas e exercícios didáticos.
+    </p>
 </div>
 
-<div class="form-group">
-<label>🎯 Assunto</label>
-<input type="text" id="assunto" value="Função Exponencial">
-</div>
+<div class="wrapper">
 
-<div class="form-group">
-<label>👥 Público-Alvo</label>
-<select id="publico">
-<option>Ensino Fundamental I</option>
-<option>Ensino Fundamental II</option>
-<option selected>Ensino Médio</option>
-<option>Ensino Superior</option>
-</select>
-</div>
+    <!-- CONFIGURAÇÕES -->
+    <div class="panel">
 
-<div class="form-group">
-<label>
-👤 Descrição do Personagem
-<span class="badge">salvo automaticamente</span>
-</label>
+        <div class="tabs">
 
-<textarea id="avatar" rows="4">
-Professor sorridente, cabelo curto preto e camisa gola redonda azul escura, pele morena.
-</textarea>
-</div>
+            <button class="tab-btn active"
+            onclick="switchTab('infografico', this)">
+            📊 Infográfico
+            </button>
 
-<div class="form-group">
-<label>🎨 Estilo Visual</label>
-<select id="estilo">
-<option selected>
-Disney Pixar 3D educational infographic style, ultra detailed, professional Brazilian school material
-</option>
+            <button class="tab-btn"
+            onclick="switchTab('capa', this)">
+            📘 Capa
+            </button>
 
-<option>
-Hand-drawn doodle educational style
-</option>
+            <button class="tab-btn"
+            onclick="switchTab('exercicios', this)">
+            📝 Exercícios
+            </button>
 
-<option>
-Minimalist vector infographic style
-</option>
-</select>
-</div>
+        </div>
 
-<button class="btn" onclick="gerarPrompt()">
-✨ Gerar Prompt Profissional
-</button>
+        <!-- INFOGRÁFICO -->
+        <div id="infografico" class="tab-content active">
 
-</div>
+            <div class="section-title">
+                Conteúdo Educacional
+            </div>
 
-<!-- RESULTADO -->
-<div class="panel">
+            <div class="form-group">
+                <label>📌 Disciplina</label>
+                <input type="text"
+                id="info-disciplina"
+                value="Matemática">
+            </div>
 
-<h2>🤖 Prompt Gerado</h2>
+            <div class="form-group">
+                <label>🎯 Assunto</label>
+                <input type="text"
+                id="info-assunto"
+                value="Função Exponencial">
+            </div>
 
-<div class="output" id="resultado">
-Seu prompt aparecerá aqui...
-</div>
+            <div class="form-group">
+                <label>👥 Público-Alvo</label>
 
-<button class="btn copy-btn" onclick="copiarPrompt()">
-📋 Copiar Prompt
-</button>
+                <select id="info-publico">
+                    <option>Ensino Fundamental I</option>
+                    <option>Ensino Fundamental II</option>
+                    <option selected>Ensino Médio</option>
+                    <option>Ensino Superior</option>
+                </select>
+            </div>
 
-</div>
+            <div class="section-title">
+                Avatar do Professor
+            </div>
+
+            <div class="form-group">
+
+                <label>
+                    👤 Descrição do Personagem
+                    <span class="badge">
+                        salvo automaticamente
+                    </span>
+                </label>
+
+                <textarea
+                id="avatar-desc"
+                rows="4">Professor sorridente, cabelo curto preto e camisa gola redonda azul escura, pele morena.</textarea>
+
+                <div class="hint">
+                    Dica: envie sua foto para IA e peça uma descrição física detalhada.
+                </div>
+
+            </div>
+
+            <div class="form-group">
+                <label>🎨 Estilo Visual</label>
+
+                <select id="avatar-estilo">
+
+                    <option selected>
+                        Disney Pixar 3D educational infographic style, ultra detailed, professional Brazilian school material
+                    </option>
+
+                    <option>
+                        Hand-drawn doodle educational style
+                    </option>
+
+                    <option>
+                        Minimalist vector infographic style
+                    </option>
+
+                </select>
+            </div>
+
+            <button
+            class="btn btn-info"
+            onclick="gerarPrompt('infografico')">
+            ✨ Gerar Infográfico Profissional
+            </button>
+
+        </div>
+
+        <!-- CAPA -->
+        <div id="capa" class="tab-content">
+
+            <div class="section-title">
+                Configuração da Capa
+            </div>
+
+            <div class="form-group">
+                <label>📚 Disciplina / Tema</label>
+                <input type="text"
+                id="capa-disciplina"
+                value="Função Exponencial">
+            </div>
+
+            <div class="form-group">
+                <label>🔤 Texto Superior</label>
+                <input type="text"
+                id="capa-top"
+                value="Apostila Visual">
+            </div>
+
+            <div class="form-group">
+                <label>📝 Texto Inferior</label>
+                <input type="text"
+                id="capa-bottom"
+                value="Aprenda de forma visual e organizada">
+            </div>
+
+            <div class="form-group">
+                <label>🎨 Estilo Visual</label>
+
+                <select id="capa-estilo">
+
+                    <option selected>
+                        Rich Brazilian educational cover style, ultra detailed
+                    </option>
+
+                    <option>
+                        Hand-drawn doodle notebook style
+                    </option>
+
+                    <option>
+                        Disney Pixar educational style
+                    </option>
+
+                </select>
+            </div>
+
+            <button
+            class="btn btn-capa"
+            onclick="gerarPrompt('capa')">
+            📘 Gerar Prompt de Capa
+            </button>
+
+        </div>
+
+        <!-- EXERCÍCIOS -->
+        <div id="exercicios" class="tab-content">
+
+            <div class="section-title">
+                Configuração dos Exercícios
+            </div>
+
+            <div class="form-group">
+                <label>📌 Disciplina</label>
+                <input type="text"
+                id="ex-disciplina"
+                value="Matemática">
+            </div>
+
+            <div class="form-group">
+                <label>🎯 Conteúdo</label>
+                <input type="text"
+                id="ex-assunto"
+                value="Função Exponencial">
+            </div>
+
+            <div class="form-group">
+                <label>👥 Nível Escolar</label>
+
+                <select id="ex-publico">
+                    <option>Ensino Fundamental I</option>
+                    <option>Ensino Fundamental II</option>
+                    <option selected>Ensino Médio</option>
+                    <option>Ensino Superior</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label>🔢 Quantidade de Questões</label>
+                <input type="number"
+                id="ex-qtd"
+                value="10">
+            </div>
+
+            <div class="form-group">
+                <label>📋 Tipo</label>
+
+                <select id="ex-tipo">
+
+                    <option selected>
+                        Mistas (objetivas e discursivas)
+                    </option>
+
+                    <option>
+                        Múltipla escolha
+                    </option>
+
+                    <option>
+                        Discursivas
+                    </option>
+
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label>🧠 Estilo</label>
+
+                <select id="ex-contexto">
+
+                    <option selected>
+                        Modelo ENEM com contextualização
+                    </option>
+
+                    <option>
+                        Direto e objetivo
+                    </option>
+
+                    <option>
+                        Situações do cotidiano
+                    </option>
+
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label>✅ Gabarito Comentado?</label>
+
+                <select id="ex-gabarito">
+                    <option selected>Sim</option>
+                    <option>Não</option>
+                </select>
+            </div>
+
+            <button
+            class="btn btn-ex"
+            onclick="gerarPrompt('exercicios')">
+            📝 Gerar Exercícios
+            </button>
+
+        </div>
+
+    </div>
+
+    <!-- RESULTADO -->
+    <div class="panel">
+
+        <h2 style="margin-bottom:20px;">
+            🤖 Prompt Gerado
+        </h2>
+
+        <div class="result" id="resultado">
+Configure os campos ao lado para gerar o prompt.
+        </div>
+
+        <button
+        class="btn copy-btn"
+        onclick="copiarPrompt()">
+        📋 Copiar Prompt
+        </button>
+
+    </div>
 
 </div>
 
 <script>
 
-// ==========================
-// SALVAR PERSONAGEM
-// ==========================
+// =====================================
+// SALVAR AVATAR
+// =====================================
 
 document.addEventListener("DOMContentLoaded", () => {
 
-    const avatarSalvo = localStorage.getItem("avatarEducacional");
+    const avatarSalvo =
+    localStorage.getItem("avatarProfessor");
 
     if(avatarSalvo){
-        document.getElementById("avatar").value = avatarSalvo;
+
+        document.getElementById(
+        "avatar-desc").value = avatarSalvo;
+
     }
 
 });
 
-document.getElementById("avatar").addEventListener("input", () => {
+document.getElementById(
+"avatar-desc").addEventListener("input", () => {
 
     localStorage.setItem(
-        "avatarEducacional",
-        document.getElementById("avatar").value
+    "avatarProfessor",
+
+    document.getElementById(
+    "avatar-desc").value
+
     );
 
 });
 
-// ==========================
-// GERAR PROMPT
-// ==========================
+// =====================================
+// TABS
+// =====================================
 
-function gerarPrompt(){
+function switchTab(id, btn){
 
-    const disciplina = document.getElementById("disciplina").value;
-    const assunto = document.getElementById("assunto").value;
-    const publico = document.getElementById("publico").value;
-    const avatar = document.getElementById("avatar").value;
-    const estilo = document.getElementById("estilo").value;
+    document.querySelectorAll(
+    ".tab-content")
+    .forEach(el => el.classList.remove("active"));
 
-    const prompt = `Crie um pôster educacional em formato retrato vertical (folha A4) extremamente detalhado, organizado e didático sobre o assunto "${assunto}" para a disciplina de ${disciplina}.
+    document.querySelectorAll(
+    ".tab-btn")
+    .forEach(el => el.classList.remove("active"));
+
+    document.getElementById(id)
+    .classList.add("active");
+
+    btn.classList.add("active");
+
+}
+
+// =====================================
+// GERADOR
+// =====================================
+
+function gerarPrompt(tipo){
+
+    let prompt = "";
+
+    // =================================
+    // INFOGRÁFICO
+    // =================================
+
+    if(tipo === "infografico"){
+
+        const disciplina =
+        document.getElementById(
+        "info-disciplina").value;
+
+        const assunto =
+        document.getElementById(
+        "info-assunto").value;
+
+        const publico =
+        document.getElementById(
+        "info-publico").value;
+
+        const avatar =
+        document.getElementById(
+        "avatar-desc").value;
+
+        const estilo =
+        document.getElementById(
+        "avatar-estilo").value;
+
+prompt = `Crie um pôster educacional em formato retrato vertical (folha A4) extremamente detalhado, organizado e didático sobre o assunto "${assunto}" para a disciplina de ${disciplina}.
 
 PÚBLICO-ALVO:
 Estudantes do ${publico}.
@@ -357,16 +693,148 @@ IMPORTANTE:
 
 Render vertical A4, proporção 3:4.`;
 
-    document.getElementById("resultado").textContent = prompt;
+    }
+
+    // =================================
+    // CAPA
+    // =================================
+
+    if(tipo === "capa"){
+
+        const disciplina =
+        document.getElementById(
+        "capa-disciplina").value;
+
+        const top =
+        document.getElementById(
+        "capa-top").value;
+
+        const bottom =
+        document.getElementById(
+        "capa-bottom").value;
+
+        const estilo =
+        document.getElementById(
+        "capa-estilo").value;
+
+prompt = `Crie uma capa premium de apostila educacional brasileira sobre "${disciplina}".
+
+ESTRUTURA:
+- Texto superior: "${top}"
+- Título principal: "${disciplina}"
+- Texto inferior: "${bottom}"
+
+VISUAL:
+- Aparência extremamente profissional.
+- Design rico em detalhes.
+- Composição dinâmica.
+- Fundo estilo papel de caderno ou elementos escolares sofisticados.
+- Ícones e ilustrações relacionados diretamente ao conteúdo.
+- Tipografia grande e impactante.
+- Organização semelhante a capas premium do Canva.
+
+ESTILO:
+${estilo}
+
+QUALIDADE:
+- ultra detailed
+- educational design
+- vibrant colors
+- Brazilian school material
+- modern educational poster
+- professional academic composition
+
+Formato vertical A4.`;
+
+    }
+
+    // =================================
+    // EXERCÍCIOS
+    // =================================
+
+    if(tipo === "exercicios"){
+
+        const disciplina =
+        document.getElementById(
+        "ex-disciplina").value;
+
+        const assunto =
+        document.getElementById(
+        "ex-assunto").value;
+
+        const publico =
+        document.getElementById(
+        "ex-publico").value;
+
+        const qtd =
+        document.getElementById(
+        "ex-qtd").value;
+
+        const tipoQuestao =
+        document.getElementById(
+        "ex-tipo").value;
+
+        const contexto =
+        document.getElementById(
+        "ex-contexto").value;
+
+        const gabarito =
+        document.getElementById(
+        "ex-gabarito").value;
+
+prompt = `Atue como um professor especialista em ${disciplina}.
+
+Crie uma lista com ${qtd} exercícios inéditos sobre "${assunto}".
+
+PÚBLICO:
+${publico}
+
+TIPO:
+${tipoQuestao}
+
+ESTILO:
+${contexto}
+
+REQUISITOS:
+- Questões claras e organizadas.
+- Linguagem adequada ao público.
+- Nível progressivo.
+- Misturar interpretação, teoria e cálculo.
+- Contextualização estilo ENEM quando necessário.
+- Alternativas plausíveis.
+- Organização profissional de apostila.
+
+ESTRUTURA:
+1. Questões básicas
+2. Questões intermediárias
+3. Questões avançadas
+4. Desafio final
+
+FORMATAÇÃO:
+- Numeração organizada.
+- Espaço entre questões.
+- Aparência de material escolar profissional.
+
+${gabarito === "Sim"
+? "Adicionar gabarito comentado detalhado ao final."
+: "Não adicionar gabarito."}`;
+
+    }
+
+    document.getElementById(
+    "resultado").textContent = prompt;
+
 }
 
-// ==========================
+// =====================================
 // COPIAR
-// ==========================
+// =====================================
 
 function copiarPrompt(){
 
-    const texto = document.getElementById("resultado").textContent;
+    const texto =
+    document.getElementById(
+    "resultado").textContent;
 
     navigator.clipboard.writeText(texto);
 

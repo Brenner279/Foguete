@@ -1,690 +1,380 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gerador de Prompts | Prof. Michel Brenner</title>
-    <style>
-        :root {
-            --primary-color: #2b6cb0;
-            --primary-hover: #1a4971;
-            --secondary-color: #f59e0b;
-            --secondary-hover: #d97706;
-            --tertiary-color: #8b5cf6;
-            --tertiary-hover: #7c3aed;
-            --success-color: #10b981;
-            --success-hover: #059669;
-            --bg-color: #f4f7f6;
-            --panel-bg: #ffffff;
-            --text-main: #334155;
-            --text-muted: #64748b;
-            --border-color: #e2e8f0;
-            --focus-ring: #a0c4ff;
-        }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Gerador de Prompts | Prof. Michel Brenner</title>
 
-        * {
-            box-sizing: border-box;
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-        }
+<style>
+:root{
+    --primary:#2563eb;
+    --secondary:#7c3aed;
+    --success:#10b981;
+    --bg:#f1f5f9;
+    --panel:#ffffff;
+    --text:#334155;
+    --muted:#64748b;
+    --border:#e2e8f0;
+}
 
-        body {
-            background-color: var(--bg-color);
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            padding: 20px;
-            margin: 0;
-            color: var(--text-main);
-            min-height: 100vh;
-        }
+*{
+    box-sizing:border-box;
+    margin:0;
+    padding:0;
+    font-family:Arial, Helvetica, sans-serif;
+}
 
-        .app-header {
-            text-align: center;
-            margin-top: 20px;
-            margin-bottom: 40px;
-            max-width: 800px;
-        }
+body{
+    background:var(--bg);
+    color:var(--text);
+    padding:20px;
+}
 
-        .app-title {
-            font-size: 2.5rem;
-            font-weight: 800;
-            margin: 0 0 10px 0;
-            background: linear-gradient(135deg, var(--primary-color), var(--tertiary-color));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            letter-spacing: -0.5px;
-        }
+.container{
+    max-width:1200px;
+    margin:auto;
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:20px;
+}
 
-        .app-subtitle {
-            font-size: 1.1rem;
-            color: var(--text-muted);
-            margin: 0;
-            line-height: 1.5;
-        }
+.panel{
+    background:var(--panel);
+    border-radius:18px;
+    padding:25px;
+    box-shadow:0 10px 25px rgba(0,0,0,0.05);
+}
 
-        .app-footer {
-            margin-top: auto;
-            padding: 40px 20px 20px;
-            text-align: center;
-            font-size: 0.9rem;
-            color: var(--text-muted);
-        }
+h1{
+    text-align:center;
+    margin-bottom:10px;
+    color:var(--primary);
+}
 
-        .app-footer a {
-            color: var(--primary-color);
-            text-decoration: none;
-            font-weight: bold;
-        }
+.sub{
+    text-align:center;
+    color:var(--muted);
+    margin-bottom:30px;
+}
 
-        .main-wrapper {
-            display: flex;
-            gap: 25px;
-            width: 100%;
-            max-width: 1200px;
-            align-items: flex-start;
-            flex: 1;
-        }
+h2{
+    margin-bottom:20px;
+    color:var(--primary);
+}
 
-        .panel {
-            background-color: var(--panel-bg);
-            border-radius: 16px;
-            padding: 30px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.04);
-            flex: 1;
-            width: 100%;
-        }
+.form-group{
+    margin-bottom:18px;
+}
 
-        .tabs-container {
-            display: flex;
-            background-color: #f8fafc;
-            border-radius: 12px;
-            padding: 6px;
-            margin-bottom: 25px;
-            gap: 4px;
-        }
+label{
+    display:block;
+    margin-bottom:8px;
+    font-weight:bold;
+}
 
-        .tab-btn {
-            flex: 1;
-            padding: 12px 5px;
-            border: none;
-            background: transparent;
-            font-size: 0.95rem;
-            font-weight: 600;
-            color: var(--text-muted);
-            border-radius: 8px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            gap: 8px;
-        }
+input,
+select,
+textarea{
+    width:100%;
+    padding:12px;
+    border:1px solid var(--border);
+    border-radius:10px;
+    background:#f8fafc;
+    font-size:15px;
+}
 
-        .tab-btn:hover {
-            color: var(--primary-color);
-            background-color: #e2e8f0;
-        }
+input:focus,
+select:focus,
+textarea:focus{
+    outline:none;
+    border-color:var(--primary);
+    background:white;
+}
 
-        .tab-btn.active {
-            background-color: var(--panel-bg);
-            color: var(--primary-color);
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-        }
+.btn{
+    width:100%;
+    border:none;
+    padding:16px;
+    border-radius:12px;
+    background:var(--primary);
+    color:white;
+    font-size:16px;
+    font-weight:bold;
+    cursor:pointer;
+    transition:.2s;
+}
 
-        .tab-content {
-            display: none;
-            animation: fadeIn 0.4s ease;
-        }
+.btn:hover{
+    background:#1d4ed8;
+}
 
-        .tab-content.active {
-            display: block;
-        }
+.output{
+    background:#0f172a;
+    color:#f8fafc;
+    border-radius:12px;
+    padding:20px;
+    min-height:500px;
+    white-space:pre-wrap;
+    font-family:monospace;
+    overflow:auto;
+}
 
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
+.copy-btn{
+    margin-top:15px;
+    background:var(--success);
+}
 
-        .header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 25px;
-            border-bottom: 1px solid var(--border-color);
-            padding-bottom: 15px;
-        }
+.copy-btn:hover{
+    background:#059669;
+}
 
-        .header h2 { margin: 0; font-size: 1.3rem; color: var(--text-main); }
+.badge{
+    background:#dbeafe;
+    color:#1d4ed8;
+    padding:3px 8px;
+    border-radius:6px;
+    font-size:12px;
+}
 
-        .section-title {
-            font-size: 0.85rem;
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
-            color: var(--primary-color);
-            margin: 25px 0 15px 0;
-            font-weight: 700;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .form-group { margin-bottom: 18px; }
-
-        .form-group label {
-            display: flex;
-            align-items: center;
-            font-weight: 600;
-            margin-bottom: 8px;
-            font-size: 0.9rem;
-            gap: 6px;
-        }
-
-        input[type="text"], input[type="number"], select, textarea {
-            width: 100%;
-            padding: 12px 15px;
-            border: 1px solid var(--border-color);
-            border-radius: 10px;
-            font-size: 0.95rem;
-            outline: none;
-            transition: all 0.3s ease;
-            background-color: #f8fafc;
-            color: var(--text-main);
-        }
-
-        input[type="text"]:focus, input[type="number"]:focus, select:focus, textarea:focus {
-            border-color: var(--focus-ring);
-            background-color: #ffffff;
-            box-shadow: 0 0 0 3px rgba(160, 196, 255, 0.2);
-        }
-
-        .badge {
-            background-color: #e2e8f0;
-            color: #475569;
-            font-size: 0.75rem;
-            padding: 3px 8px;
-            border-radius: 6px;
-            font-weight: normal;
-        }
-
-        .hint {
-            display: block;
-            font-size: 0.8rem;
-            color: #94a3b8;
-            margin-top: 5px;
-        }
-        
-        .hint-center {
-            text-align: center;
-            font-size: 0.85rem;
-            color: #94a3b8;
-            margin-top: 12px;
-        }
-
-        .hint-box {
-            background-color: #eff6ff;
-            border: 1px solid #bfdbfe;
-            border-radius: 10px;
-            padding: 15px;
-            margin-bottom: 20px;
-        }
-
-        .hint-title {
-            font-weight: bold;
-            color: #1e3a8a;
-            display: block;
-            margin-bottom: 5px;
-            font-size: 0.9rem;
-        }
-
-        .hint-desc {
-            font-size: 0.85rem;
-            color: #3b82f6;
-            margin: 0 0 10px 0;
-            line-height: 1.4;
-        }
-
-        .mini-prompt-container {
-            display: flex;
-            gap: 10px;
-            align-items: stretch;
-        }
-
-        .mini-prompt-container code {
-            flex: 1;
-            background-color: #ffffff;
-            border: 1px solid #93c5fd;
-            padding: 10px;
-            border-radius: 6px;
-            font-size: 0.8rem;
-            color: #1e40af;
-            font-family: monospace;
-            line-height: 1.4;
-        }
-
-        .btn-mini-copiar {
-            background-color: #3b82f6;
-            color: white;
-            border: none;
-            border-radius: 6px;
-            padding: 0 15px;
-            font-size: 0.8rem;
-            font-weight: bold;
-            cursor: pointer;
-            transition: background-color 0.2s;
-            white-space: nowrap;
-        }
-
-        .btn-mini-copiar:hover { background-color: #2563eb; }
-
-        .btn-gerar {
-            width: 100%;
-            color: white;
-            border: none;
-            padding: 16px;
-            font-size: 1rem;
-            font-weight: bold;
-            border-radius: 10px;
-            cursor: pointer;
-            transition: transform 0.1s, background-color 0.2s;
-            margin-top: 15px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            gap: 10px;
-        }
-        
-        .btn-gerar:active { transform: scale(0.98); }
-
-        .btn-info { background-color: var(--primary-color); }
-        .btn-info:hover { background-color: var(--primary-hover); }
-        
-        .btn-capa { background-color: var(--secondary-color); }
-        .btn-capa:hover { background-color: var(--secondary-hover); }
-
-        .btn-exercicios { background-color: var(--tertiary-color); }
-        .btn-exercicios:hover { background-color: var(--tertiary-hover); }
-
-        .result-panel {
-            background-color: #f8fafc;
-            border: 2px dashed #cbd5e1;
-            position: sticky;
-            top: 40px;
-        }
-
-        .result-panel h3 {
-            margin-top: 0;
-            font-size: 1.1rem;
-            color: var(--text-main);
-            border-bottom: 1px solid var(--border-color);
-            padding-bottom: 10px;
-            margin-bottom: 15px;
-        }
-
-        #prompt-output {
-            font-family: 'Courier New', Courier, monospace;
-            white-space: pre-wrap;
-            color: #0f172a;
-            line-height: 1.6;
-            font-size: 0.9rem;
-            background: #ffffff;
-            padding: 15px;
-            border-radius: 8px;
-            border: 1px solid var(--border-color);
-            min-height: 200px;
-        }
-        
-        button.btn-copiar {
-            width: 100%;
-            background-color: var(--success-color);
-            color: white;
-            border: none;
-            padding: 14px;
-            font-size: 1rem;
-            font-weight: bold;
-            border-radius: 10px;
-            cursor: pointer;
-            display: none;
-            justify-content: center;
-            align-items: center;
-            gap: 8px;
-            margin-top: 15px;
-        }
-
-        .row-group {
-            display: flex;
-            gap: 15px;
-        }
-
-        .row-group .form-group {
-            flex: 1;
-        }
-
-        @media (max-width: 900px) {
-            .main-wrapper { flex-direction: column; }
-            .result-panel { position: static; }
-            .mini-prompt-container { flex-direction: column; }
-            .btn-mini-copiar { padding: 10px; }
-            .row-group { flex-direction: column; gap: 0; }
-            .app-title { font-size: 2rem; }
-        }
-    </style>
+@media(max-width:900px){
+    .container{
+        grid-template-columns:1fr;
+    }
+}
+</style>
 </head>
+
 <body>
 
-<header class="app-header">
-    <h1 class="app-title">🚀 Assistente Criativo - Professor Brenner</h1>
-    <p class="app-subtitle">Crie prompts otimizados para gerar infográficos, capas de materiais e listas de exercícios em segundos.</p>
-</header>
+<h1>🚀 Assistente Criativo - Professor Brenner</h1>
+<p class="sub">
+Gerador avançado de prompts para infográficos educacionais, apostilas e materiais didáticos.
+</p>
 
-<div class="main-wrapper">
-    <!-- Painel de Configurações -->
-    <div class="panel">
-        <div class="tabs-container">
-            <button class="tab-btn active" onclick="switchTab('tab-infografico', this)">📊 Infográfico A4</button>
-            <button class="tab-btn" onclick="switchTab('tab-capa', this)">📘 Capa</button>
-            <button class="tab-btn" onclick="switchTab('tab-exercicios', this)">📝 Exercícios</button>
-        </div>
+<div class="container">
 
-        <!-- ABA: INFOGRÁFICO A4 -->
-        <div id="tab-infografico" class="tab-content active">
-            <div class="header"><h2>Configurar Ficha de Estudos / Resumo A4</h2></div>
-            
-            <div class="section-title">📚 Conteúdo Didático</div>
-            <div class="form-group">
-                <label>📌 Disciplina</label>
-                <input type="text" id="info-disciplina" value="Matemática">
-            </div>
-            <div class="form-group">
-                <label>🎯 Assunto</label>
-                <input type="text" id="info-assunto" value="Sistemas Lineares">
-            </div>
-            <div class="form-group">
-                <label>👥 Público</label>
-                <select id="info-publico">
-                    <option value="Ensino Fundamental I">Ensino Fundamental I</option>
-                    <option value="Ensino Fundamental II">Ensino Fundamental II</option>
-                    <option value="Ensino Médio" selected>Ensino Médio</option>
-                    <option value="Ensino Superior">Ensino Superior</option>
-                </select>
-            </div>
+<!-- CONFIGURAÇÕES -->
+<div class="panel">
 
-            <div class="section-title">👤 Personagem Padrão (Avatar)</div>
-            
-            <div class="hint-box">
-                <span class="hint-title">💡 Dica de Ouro: Como se descrever?</span>
-                <p class="hint-desc">Envie uma foto sua na IA junto com o texto abaixo. Depois, cole a resposta no campo "Descrição do Personagem".</p>
-                <div class="mini-prompt-container">
-                    <code id="texto-dica">Analise esta foto e descreva detalhadamente minhas características físicas (cabelo, óculos, barba, rosto, pele e roupas). Crie um parágrafo curto focado nos traços principais para eu usar na geração de um avatar 3D.</code>
-                    <button class="btn-mini-copiar" id="btn-copiar-dica" onclick="copiarDica()">📋 Copiar</button>
-                </div>
-            </div>
+<h2>📘 Gerador de Infográfico Educacional</h2>
 
-            <div class="form-group">
-                <label>📝 Descrição do Personagem <span class="badge">Salvo automaticamente</span></label>
-                <input type="text" id="avatar-desc" placeholder="Cole aqui a descrição gerada pela IA ou digite a sua..." oninput="salvarAvatar()">
-            </div>
-            
-            <div class="form-group">
-                <label>🎨 Estilo do Personagem e Arte</label>
-                <select id="avatar-estilo">
-                    <option value="Disney Pixar 3D style, cute and expressive" selected>Disney Pixar 3D</option>
-                    <option value="Hand-drawn doodle style, colorful lines">Hand-drawn Doodle</option>
-                    <option value="Minimalist vector flat design">Vetor Minimalista</option>
-                </select>
-            </div>
-
-            <button class="btn-gerar btn-info" onclick="gerarPrompt('infografico')">✨ Gerar Prompt de Infográfico A4</button>
-        </div>
-
-        <!-- ABA: CAPA -->
-        <div id="tab-capa" class="tab-content">
-            <div class="header">
-                <h2>Capa de Apostila</h2>
-            </div>
-            <div class="form-group">
-                <label>📌 Disciplina / Assunto</label>
-                <input type="text" id="capa-disciplina" placeholder="Ex: Química, Física, MMC..." value="MMC">
-            </div>
-            <div class="form-group">
-                <label>🔤 Texto superior</label>
-                <input type="text" id="capa-top-text" placeholder="Ex: Fichas Desenhadas, Apostila Visual..." value="Fichas Desenhadas">
-                <span class="hint">Aparece acima do título principal</span>
-            </div>
-            <div class="form-group">
-                <label>📝 Frase inferior <span class="badge">opcional</span></label>
-                <input type="text" id="capa-bottom-text" placeholder="Ex: As moléculas ganharam vida!">
-                <span class="hint">Se vazio, será gerada automaticamente baseada no assunto</span>
-            </div>
-            <div class="form-group">
-                <label>🎨 Estilo visual</label>
-                <select id="capa-estilo">
-                    <option value="Hand-drawn doodle" selected>Hand-drawn / Doodle</option>
-                    <option value="3D Pixar style">3D Pixar Style</option>
-                    <option value="Minimalist geometric">Minimalista Geométrico</option>
-                </select>
-            </div>
-
-            <button class="btn-gerar btn-capa" onclick="gerarPrompt('capa')">📘 Gerar Prompt de Capa</button>
-            <div class="hint-center">Rápido e fácil</div>
-        </div>
-
-        <!-- ABA: EXERCÍCIOS -->
-        <div id="tab-exercicios" class="tab-content">
-            <div class="header"><h2>Criação de Exercícios</h2></div>
-            
-            <div class="form-group">
-                <label>📌 Disciplina</label>
-                <input type="text" id="ex-disciplina" value="Matemática">
-            </div>
-            
-            <div class="form-group">
-                <label>🎯 Assunto Específico</label>
-                <input type="text" id="ex-assunto" placeholder="Ex: Equações de 2º Grau com Bhaskara" value="Progressão Aritmética">
-            </div>
-
-            <div class="row-group">
-                <div class="form-group">
-                    <label>👥 Nível Escolar</label>
-                    <select id="ex-publico">
-                        <option value="Ensino Fundamental I">Ensino Fundamental I</option>
-                        <option value="Ensino Fundamental II">Ensino Fundamental II</option>
-                        <option value="Ensino Médio" selected>Ensino Médio</option>
-                        <option value="Ensino Superior">Ensino Superior</option>
-                    </select>
-                </div>
-                
-                <div class="form-group">
-                    <label>🔢 Quantidade</label>
-                    <input type="number" id="ex-qtd" min="1" max="20" value="5">
-                </div>
-            </div>
-
-            <div class="row-group">
-                <div class="form-group">
-                    <label>📋 Tipo de Questão</label>
-                    <select id="ex-tipo">
-                        <option value="múltipla escolha (com 5 alternativas de A a E)" selected>Múltipla Escolha (A até E)</option>
-                        <option value="múltipla escolha (com 4 alternativas de A a D)">Múltipla Escolha (A até D)</option>
-                        <option value="discursivas (abertas para cálculo/escrita)">Discursivas / Abertas</option>
-                        <option value="mistas (metade objetivas, metade discursivas)">Mistas (Objetivas e Discursivas)</option>
-                    </select>
-                </div>
-                
-                <div class="form-group">
-                    <label>✅ Gabarito Comentado?</label>
-                    <select id="ex-gabarito">
-                        <option value="sim" selected>Sim, ao final da lista</option>
-                        <option value="nao">Não, apenas as questões</option>
-                    </select>
-                </div>
-            </div>
-
-            <div class="form-group">
-                <label>🧠 Contexto e Estilo</label>
-                <select id="ex-contexto">
-                    <option value="situações contextualizadas do dia a dia e problemas reais" selected>Problemas do Dia a Dia (Contextualizado)</option>
-                    <option value="modelo ENEM/SAEB, focando em interpretação de texto e lógica">Modelo ENEM / Avaliações Externas (SAEB)</option>
-                    <option value="questões diretas, focadas apenas no cálculo ou teoria base">Direto e Objetivo (Treinamento base)</option>
-                    <option value="temática lúdica ou de jogos (gamificação)">Temática de Jogos/Gamificação</option>
-                </select>
-            </div>
-
-            <button class="btn-gerar btn-exercicios" onclick="gerarPrompt('exercicios')">📝 Gerar Prompt de Exercícios</button>
-        </div>
-
-    </div>
-
-    <!-- Painel de Resultados -->
-    <div class="panel result-panel">
-        <h3>🤖 Prompt Principal Gerado</h3>
-        <div id="prompt-output">Configure os campos ao lado para gerar seu prompt personalizado.</div>
-        <button class="btn-copiar" id="btn-copiar" onclick="copiarPrompt()">📋 Copiar Prompt Principal</button>
-    </div>
+<div class="form-group">
+<label>📌 Disciplina</label>
+<input type="text" id="disciplina" value="Matemática">
 </div>
 
-<footer class="app-footer">
-    <p>Desenvolvido para educadores inovadores. © 2026 | <a href="#" target="_blank">@prof_brenner</a></p>
-</footer>
+<div class="form-group">
+<label>🎯 Assunto</label>
+<input type="text" id="assunto" value="Função Exponencial">
+</div>
+
+<div class="form-group">
+<label>👥 Público-Alvo</label>
+<select id="publico">
+<option>Ensino Fundamental I</option>
+<option>Ensino Fundamental II</option>
+<option selected>Ensino Médio</option>
+<option>Ensino Superior</option>
+</select>
+</div>
+
+<div class="form-group">
+<label>
+👤 Descrição do Personagem
+<span class="badge">salvo automaticamente</span>
+</label>
+
+<textarea id="avatar" rows="4">
+Professor sorridente, cabelo curto preto e camisa gola redonda azul escura, pele morena.
+</textarea>
+</div>
+
+<div class="form-group">
+<label>🎨 Estilo Visual</label>
+<select id="estilo">
+<option selected>
+Disney Pixar 3D educational infographic style, ultra detailed, professional Brazilian school material
+</option>
+
+<option>
+Hand-drawn doodle educational style
+</option>
+
+<option>
+Minimalist vector infographic style
+</option>
+</select>
+</div>
+
+<button class="btn" onclick="gerarPrompt()">
+✨ Gerar Prompt Profissional
+</button>
+
+</div>
+
+<!-- RESULTADO -->
+<div class="panel">
+
+<h2>🤖 Prompt Gerado</h2>
+
+<div class="output" id="resultado">
+Seu prompt aparecerá aqui...
+</div>
+
+<button class="btn copy-btn" onclick="copiarPrompt()">
+📋 Copiar Prompt
+</button>
+
+</div>
+
+</div>
 
 <script>
-    // Carregar o avatar salvo no LocalStorage assim que a página abre
-    document.addEventListener("DOMContentLoaded", () => {
-        const avatarSalvo = localStorage.getItem("avatarDesc");
-        if (avatarSalvo) {
-            document.getElementById("avatar-desc").value = avatarSalvo;
-        } else {
-            // Valor padrão caso não tenha nada salvo
-            document.getElementById("avatar-desc").value = "Professor sorridente com óculos de armação escura, cabelo curto castanho e camisa polo";
-        }
-    });
 
-    // Função para salvar o avatar sempre que o usuário digitar (oninput)
-    function salvarAvatar() {
-        const avatar = document.getElementById("avatar-desc").value;
-        localStorage.setItem("avatarDesc", avatar);
+// ==========================
+// SALVAR PERSONAGEM
+// ==========================
+
+document.addEventListener("DOMContentLoaded", () => {
+
+    const avatarSalvo = localStorage.getItem("avatarEducacional");
+
+    if(avatarSalvo){
+        document.getElementById("avatar").value = avatarSalvo;
     }
 
-    function switchTab(tabId, btnElement) {
-        // Remove a classe active de todas as abas e botões
-        document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
-        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-        
-        // Adiciona active na aba atual
-        document.getElementById(tabId).classList.add('active');
-        btnElement.classList.add('active');
-        
-        // Esconde botão de copiar e reseta o output
-        document.getElementById('btn-copiar').style.display = 'none';
-        document.getElementById('prompt-output').textContent = "Aguardando nova configuração...";
-    }
+});
 
-    function copiarDica() {
-        const text = document.getElementById('texto-dica').textContent;
-        const btn = document.getElementById('btn-copiar-dica');
-        
-        navigator.clipboard.writeText(text).then(() => {
-            btn.innerHTML = '✅ Copiado!';
-            btn.style.backgroundColor = '#10b981';
-            
-            setTimeout(() => {
-                btn.innerHTML = '📋 Copiar';
-                btn.style.backgroundColor = '#3b82f6';
-            }, 2000);
-        });
-    }
+document.getElementById("avatar").addEventListener("input", () => {
 
-    function gerarPrompt(tipo) {
-        let prompt = "";
+    localStorage.setItem(
+        "avatarEducacional",
+        document.getElementById("avatar").value
+    );
 
-        if (tipo === 'infografico') {
-            const disciplina = document.getElementById('info-disciplina').value;
-            const assunto = document.getElementById('info-assunto').value;
-            const publico = document.getElementById('info-publico').value;
-            const avatar = document.getElementById('avatar-desc').value;
-            const estilo = document.getElementById('avatar-estilo').value;
+});
 
-            // Salva o avatar no momento da geração para garantir
-            salvarAvatar();
+// ==========================
+// GERAR PROMPT
+// ==========================
 
-            prompt = `Crie o design de um resumo didático estruturado em formato retrato (proporção vertical, tamanho folha A4) sobre o assunto "${assunto}" para a disciplina de ${disciplina}.
+function gerarPrompt(){
 
-PÚBLICO-ALVO: Estudantes de nível ${publico}.
+    const disciplina = document.getElementById("disciplina").value;
+    const assunto = document.getElementById("assunto").value;
+    const publico = document.getElementById("publico").value;
+    const avatar = document.getElementById("avatar").value;
+    const estilo = document.getElementById("estilo").value;
 
-LAYOUT E ESTRUTURA (ATENÇÃO ESPECIAL):
-- O layout deve ser extremamente organizado, acadêmico e limpo.
-- Divida o espaço da página em caixas/painéis retangulares organizados, com bordas arredondadas e fundos em cores pastéis muito suaves (azul claro, verde claro, lilás, etc.) para separar os tópicos, definições, exemplos e propriedades.
-- Título principal bem destacado no topo da página.
-- O design deve simular uma "ficha de estudos" (cheat sheet) com foco em conteúdo técnico: simule a presença de textos estruturados em tópicos (bullet points), fórmulas, pequenas tabelas e gráficos simples.
-- MENOS IMAGENS E MAIS ESTRUTURA: Evite poluição visual e ilustrações decorativas soltas. Não crie um fundo confuso; use fundo branco. A prioridade é a organização didática dos blocos de conteúdo.
+    const prompt = `Crie um pôster educacional em formato retrato vertical (folha A4) extremamente detalhado, organizado e didático sobre o assunto "${assunto}" para a disciplina de ${disciplina}.
 
-USO DO PERSONAGEM (AVATAR):
-- O material deve conter o seguinte personagem atuando como professor/instrutor: "${avatar}".
-- APLICAÇÃO PONTUAL: O personagem NÃO deve ocupar o centro da página. Coloque-o de forma discreta em posições estratégicas (ex: apenas no canto superior esquerdo apontando para um balão de fala, e uma variação no canto inferior direito dando uma dica).
-- REFERÊNCIA VISUAL (ATENÇÃO IA): Se houver uma imagem anexada a este prompt, utilize as características físicas da pessoa na foto para criar o rosto do personagem, mantendo a coerência com a descrição.
+PÚBLICO-ALVO:
+Estudantes do ${publico}.
 
-ESTILO VISUAL: Siga rigorosamente o estilo "${estilo}" para o render do personagem e elementos gráficos de cabeçalho.
-(Nota para a IA: renderize com proporção vertical estilo --ar 3:4 ou --ar 1:1.4).`;
+OBJETIVO VISUAL:
+O material deve parecer uma mistura de:
+- apostila visual profissional brasileira,
+- resumo de quadro,
+- ficha de revisão escolar,
+- infográfico didático completo.
 
-        } else if (tipo === 'capa') {
-            const assunto = document.getElementById('capa-disciplina').value.trim() || '[Disciplina/Assunto]';
-            const topText = document.getElementById('capa-top-text').value.trim() || 'Apostila Visual';
-            let bottomText = document.getElementById('capa-bottom-text').value.trim();
-            const estilo = document.getElementById('capa-estilo').value;
+O conteúdo deve ser pensado para:
+- professores explicarem no quadro,
+- alunos copiarem,
+- servir como base para resolução de exercícios.
 
-            if (!bottomText) {
-                bottomText = `${assunto} desenhada para entender`;
-            }
+ESTRUTURA OBRIGATÓRIA:
+O layout deve possuir MUITOS BLOCOS ORGANIZADOS, numerados e separados visualmente.
 
-            prompt = `TOP TEXT: "${topText}" in a handwritten brush script font style, placed at the top of the cover. 
-MAIN TITLE: "${assunto}" in large, bold, inflated 3D colorful gradient typography with shine, glow and depth effects, placed centrally and prominently. 
-BOTTOM TEXT: "${bottomText}" in a smaller elegant font at the bottom. 
-BACKGROUND: Light notebook grid/squared paper texture. 
-ILLUSTRATIONS: Scattered all around the title, hand-drawn colorful doodle illustrations of subject-specific educational icons and symbols related to ${assunto}. Every illustration must be directly related to ${assunto}. High level of detail, vibrant colors, playful but organized layout. 
-STYLE: ${estilo} illustrations, colorful, educational, professional book cover quality. Rich composition (NOT minimalist). Subject-specific illustrations only - NO generic stick figures. No repeated elements, NO unrelated icons. 
-The final result must look like a professional Brazilian educational material cover ("apostila" style), visually attractive, rich in details, and fully coherent with the subject ${assunto}.`;
+Organize o conteúdo em seções como:
+1. Definição
+2. Conceitos importantes
+3. Fórmulas
+4. Propriedades
+5. Exemplos resolvidos
+6. Gráficos ou figuras
+7. Aplicações práticas
+8. Exercícios rápidos
+9. Resumo final
 
-        } else if (tipo === 'exercicios') {
-            const disciplina = document.getElementById('ex-disciplina').value;
-            const assunto = document.getElementById('ex-assunto').value;
-            const publico = document.getElementById('ex-publico').value;
-            const qtd = document.getElementById('ex-qtd').value;
-            const tipoQuestao = document.getElementById('ex-tipo').value;
-            const contexto = document.getElementById('ex-contexto').value;
-            const gabarito = document.getElementById('ex-gabarito').value;
+DENSIDADE DE CONTEÚDO:
+- O pôster deve possuir MUITO CONTEÚDO VISÍVEL.
+- Priorize textos explicativos curtos, fórmulas matemáticas, exemplos resolvidos, diagramas e tabelas.
+- Evite grandes espaços vazios.
+- O conteúdo deve ocupar praticamente toda a folha.
+- Cada bloco deve conter:
+  - título,
+  - explicação curta,
+  - fórmulas destacadas,
+  - exemplos visuais.
 
-            prompt = `Atue como um professor conteudista especialista em ${disciplina}. Crie uma lista com ${qtd} exercícios inéditos sobre "${assunto}". 
+ESTILO DE ORGANIZAÇÃO:
+- Fundo branco ou papel de caderno extremamente suave.
+- Caixas organizadas com bordas arredondadas.
+- Cada seção deve ter uma cor própria suave e harmônica.
+- Use tipografia grande e legível.
+- Aparência limpa, acadêmica e extremamente organizada.
+- Visual semelhante a materiais de revisão premium do Canva.
 
-PÚBLICO-ALVO: Estudantes do ${publico}. A linguagem, o vocabulário e a dificuldade devem ser estritamente calibrados para essa faixa etária.
+GRÁFICOS E FIGURAS:
+- Use gráficos, figuras geométricas, esquemas, diagramas e ilustrações SOMENTE quando forem realmente úteis para explicar o conteúdo.
+- As figuras devem ser educativas e não decorativas.
+- Fórmulas matemáticas devem estar matematicamente corretas.
 
-ESTRUTURA DAS QUESTÕES:
-- Formato exigido: ${tipoQuestao}.
-- Contextualização: Crie as questões utilizando ${contexto}.
-${tipoQuestao.includes('múltipla') ? '- Para múltipla escolha, crie distratores (alternativas erradas) plausíveis que reflitam os erros mais comuns dos estudantes.' : ''}
+USO DO PERSONAGEM:
+- O material deve conter o seguinte personagem:
+"${avatar}"
 
-DIRETRIZES DE QUALIDADE:
-- As questões devem ser redigidas com clareza, objetividade e sem ambiguidades.
-- O texto base não deve ser excessivamente longo a menos que seja estritamente necessário para o contexto.
-- Garanta que todas as premissas matemáticas/lógicas da questão estejam corretas.
+- O personagem deve aparecer como professor/instrutor visual.
+- Use o personagem apenas em pontos estratégicos:
+  - canto superior,
+  - segurando placas,
+  - apontando fórmulas,
+  - dando dicas,
+  - próximo de exemplos.
+- O personagem NÃO deve ocupar muito espaço.
+- O conteúdo é mais importante que o personagem.
 
-${gabarito === 'sim' ? 'RESOLUÇÃO: Forneça um GABARITO COMENTADO passo a passo logo após o fim da lista de exercícios, explicando o raciocínio utilizado para chegar à resposta.' : 'ATENÇÃO: NÃO forneça o gabarito agora, forneça apenas a lista de exercícios pronta para ser entregue aos alunos.'}`;
-        }
+ESTILO VISUAL:
+Siga rigorosamente o estilo:
+"${estilo}"
 
-        mostrarResultado(prompt);
-    }
+QUALIDADE VISUAL:
+- aparência ultra detalhada,
+- cores vibrantes mas organizadas,
+- estética profissional,
+- composição rica,
+- design moderno educacional brasileiro,
+- estilo infográfico premium.
 
-    function mostrarResultado(texto) {
-        document.getElementById('prompt-output').textContent = texto;
-        document.getElementById('btn-copiar').style.display = 'flex';
-    }
+IMPORTANTE:
+- NÃO gerar visual minimalista.
+- NÃO deixar áreas vazias.
+- NÃO criar excesso de elementos decorativos aleatórios.
+- Priorizar organização didática.
+- Priorizar conteúdo educativo.
+- O resultado final deve parecer um material completo de revisão escolar profissional.
 
-    function copiarPrompt() {
-        const text = document.getElementById('prompt-output').textContent;
-        navigator.clipboard.writeText(text).then(() => {
-            const btn = document.getElementById('btn-copiar');
-            btn.innerHTML = '✅ Copiado com Sucesso!';
-            setTimeout(() => btn.innerHTML = '📋 Copiar Prompt Principal', 2000);
-        });
-    }
+Render vertical A4, proporção 3:4.`;
+
+    document.getElementById("resultado").textContent = prompt;
+}
+
+// ==========================
+// COPIAR
+// ==========================
+
+function copiarPrompt(){
+
+    const texto = document.getElementById("resultado").textContent;
+
+    navigator.clipboard.writeText(texto);
+
+    alert("Prompt copiado com sucesso!");
+
+}
+
 </script>
+
 </body>
 </html>
